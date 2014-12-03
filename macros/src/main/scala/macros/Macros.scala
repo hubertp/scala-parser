@@ -12,6 +12,8 @@ object Macros {
   import scala.reflect.macros._
   import Compat210.whitebox.Context
 
+  // See comment in MacroExtensions on providing the type
+  // explicitly. Looks like a bug in 2.10.x
   def opt_impl[I <: HList: c.WeakTypeTag, O <: HList: c.WeakTypeTag]
               (c: Context)
               (r: c.Expr[Rule[I, O]])
@@ -58,7 +60,7 @@ object Macros {
     def optional[I <: HList: c.WeakTypeTag, O <: HList: c.WeakTypeTag]
                 (r: c.Expr[Rule[I, O]])
                 (o: c.Expr[Lifter[Option, I, O]])
-                : c.Expr[Any] = {//c.Expr[Rule[o.value.In, o.value.Out]] = {
+                : c.Expr[Any] = {//: c.Expr[Rule[o.value.In, o.value.Out]] = {
       c.Expr(q"optional($r)")
     }
 

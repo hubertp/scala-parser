@@ -10,6 +10,11 @@ import scala.collection.immutable
 
 trait MacroExtensions {
 
+  // Note, if we provide the type explicitly,
+  // 2.10.x complains about type returns incompatibility.
+  // So we use whitebox macros.
+  // Uncomment this type and the corresponding macro impl
+  // to get the bug. Works in 2.11.x
   def opt[I <: HList, O <: HList]
        (r: Rule[I, O])
        (implicit o: Lifter[Option, I, O])
