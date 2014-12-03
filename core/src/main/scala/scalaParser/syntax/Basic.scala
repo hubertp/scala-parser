@@ -18,15 +18,28 @@ trait Basic { self: Parser =>
     def WSChar = rule( "\u0020" | "\u0009" )
     def Newline = rule( "\r\n" | "\n" )
     def Semi = rule( ";" | oneOrMore(Newline) )
+
+    // Workaround 2.10.x bugs. Doesn't like eta-expansion.
+    private def OpCharTest: Char => Boolean = (c: Char) =>
+      (c.getType == Character.OTHER_SYMBOL) ||
+      (c.getType == Character.MATH_SYMBOL)
     def OpChar = rule {
       anyOf("""!#$%&*+-/:<=>?@\^|~""") |
-      CharPredicate.from(_.getType match {
-        case Character.OTHER_SYMBOL | Character.MATH_SYMBOL => true; case _ => false
-      })
+      CharPredicate.from(OpCharTest)
     }
-    def Letter = rule( Upper | Lower | CharPredicate.from(c => c.isLetter | c.isDigit) )
-    def Lower = rule( "a" - "z" | "$" | "_" | CharPredicate.from(_.isLower) )
-    def Upper = rule( "A" - "Z" | CharPredicate.from(_.isUpper) )
+
+    // 2.10.x eta-expansion bug
+    private def LetterCharTest: Char => Boolean = (c: Char) =>
+      (c.isLetter || c.isDigit)
+    def Letter = rule( Upper | Lower | CharPredicate.from(LetterCharTest) )
+
+    // 2.10.x eta-expansion bug
+    private def LowerCharTest: Char => Boolean = (c: Char) => c.isLower
+    def Lower = rule( "a" - "z" | "$" | "_" | CharPredicate.from(LowerCharTest) )
+
+    // 2.10.x eta-expansion bug
+    private def UpperCharTest: Char => Boolean = (c: Char) => c.isUpper
+    def Upper = rule( "A" - "Z" | CharPredicate.from(UpperCharTest) )
   }
   /**
    * Most keywords don't just require the correct characters to match,

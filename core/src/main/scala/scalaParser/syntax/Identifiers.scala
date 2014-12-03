@@ -1,9 +1,10 @@
 package scalaParser
 package syntax
+
 import acyclic.file
 import org.parboiled2._
 import macros.Macros._
-trait Identifiers { self: Parser with Basic =>
+trait Identifiers { self: Parser with Basic with MacroExtensions =>
   object Identifiers{
     import Basic._
     def Operator = rule{!Keywords ~ rep1(OpChar)}

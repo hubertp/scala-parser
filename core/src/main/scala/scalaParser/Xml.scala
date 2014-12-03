@@ -11,8 +11,12 @@ trait Xml extends Core {
   def XmlExpr = rule( WL ~ Xml.XmlContent ~ rep(WL ~ Xml.Element) )
   def XmlPattern = rule( WL ~ Xml.ElemPattern )
 
+  // Looks like 2.10.x bug.
+  // I get stackoverflows on this one.
+  // And no, increasing the stack size does not help.
   private[this] object Xml{
-    def BaseChar = rule(
+    def BaseChar: Rule0 = rule( BaseChar1 | BaseChar2 | BaseChar3 )
+    private def BaseChar1: Rule0 = rule(
       ("\u0041"-"\u005A") | ("\u0061"-"\u007A") | ("\u00C0"-"\u00D6") | ("\u00D8"-"\u00F6") |
       ("\u00F8"-"\u00FF") | ("\u0100"-"\u0131") | ("\u0134"-"\u013E") | ("\u0141"-"\u0148") |
       ("\u014A"-"\u017E") | ("\u0180"-"\u01C3") | ("\u01CD"-"\u01F0") | ("\u01F4"-"\u01F5") |
@@ -31,7 +35,10 @@ trait Xml extends Core {
       ("\u0A13"-"\u0A28") | ("\u0A2A"-"\u0A30") | ("\u0A32"-"\u0A33") | ("\u0A35"-"\u0A36") |
       ("\u0A38"-"\u0A39") | ("\u0A59"-"\u0A5C") | "\u0A5E" | ("\u0A72"-"\u0A74") |
       ("\u0A85"-"\u0A8B") | "\u0A8D" | ("\u0A8F"-"\u0A91") | ("\u0A93"-"\u0AA8") |
-      ("\u0AAA"-"\u0AB0") | ("\u0AB2"-"\u0AB3") | ("\u0AB5"-"\u0AB9") | "\u0ABD" | "\u0AE0" |
+      ("\u0AAA"-"\u0AB0") | ("\u0AB2"-"\u0AB3") | ("\u0AB5"-"\u0AB9") | "\u0ABD" | "\u0AE0"
+    )
+
+    private def BaseChar2: Rule0 = rule(
       ("\u0B05"-"\u0B0C") | ("\u0B0F"-"\u0B10") | ("\u0B13"-"\u0B28") | ("\u0B2A"-"\u0B30") |
       ("\u0B32"-"\u0B33") | ("\u0B36"-"\u0B39") | "\u0B3D" | ("\u0B5C"-"\u0B5D") |
       ("\u0B5F"-"\u0B61") | ("\u0B85"-"\u0B8A") | ("\u0B8E"-"\u0B90") | ("\u0B92"-"\u0B95") |
@@ -46,7 +53,10 @@ trait Xml extends Core {
       "\u0E8D" | ("\u0E94"-"\u0E97") | ("\u0E99"-"\u0E9F") | ("\u0EA1"-"\u0EA3") | "\u0EA5" |
       "\u0EA7" | ("\u0EAA"-"\u0EAB") | ("\u0EAD"-"\u0EAE") | "\u0EB0" | ("\u0EB2"-"\u0EB3") |
       "\u0EBD" | ("\u0EC0"-"\u0EC4") | ("\u0F40"-"\u0F47") | ("\u0F49"-"\u0F69") |
-      ("\u10A0"-"\u10C5") | ("\u10D0"-"\u10F6") | "\u1100" | ("\u1102"-"\u1103") |
+      ("\u10A0"-"\u10C5") | ("\u10D0"-"\u10F6") | "\u1100" | ("\u1102"-"\u1103")
+    )
+
+    private def BaseChar3: Rule0 = rule(
       ("\u1105"-"\u1107") | "\u1109" | ("\u110B"-"\u110C") | ("\u110E"-"\u1112") |
       "\u113C" | "\u113E" | "\u1140" | "\u114C" | "\u114E" | "\u1150" | ("\u1154"-"\u1155") |
       "\u1159" | ("\u115F"-"\u1161") | "\u1163" | "\u1165" | "\u1167" | "\u1169" |
@@ -60,6 +70,7 @@ trait Xml extends Core {
       ("\u1FF6"-"\u1FFC") | "\u2126" | ("\u212A"-"\u212B") | "\u212E" | ("\u2180"-"\u2182") |
       ("\u3041"-"\u3094") | ("\u30A1"-"\u30FA") | ("\u3105"-"\u312C") | ("\uAC00"-"\uD7A3")
     )
+
     def Ideographic = rule( "\u4E00"-"\u9FA5" | "\u3007" | "\u3021"-"\u3029" )
     def Eq = rule (opt(WL) ~ '=' ~ opt(WL))
 

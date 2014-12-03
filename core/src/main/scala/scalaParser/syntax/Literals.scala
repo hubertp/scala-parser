@@ -3,10 +3,14 @@ package syntax
 import acyclic.file
 import org.parboiled2._
 import macros.Macros._
-trait Literals { self: Parser with Basic with Identifiers =>
+
+
+trait Literals { self: Parser with Basic with Identifiers 
+                              with MacroExtensions =>
   def Block: Rule0
   def WL: Rule0
-  object Literals{
+
+  object Literals {
     import Basic._
     def Float = {
       def Thing = rule( rep1(Digit) ~ opt(Exp) ~ opt(FloatType) )
@@ -54,7 +58,7 @@ trait Literals { self: Parser with Basic with Identifiers =>
       }
     }
 
-    def isPrintableChar(c: Char): Boolean = {
+    def isPrintableChar: Char => Boolean = { (c: Char) =>
       val block = Character.UnicodeBlock.of(c)
       !Character.isISOControl(c) && !Character.isSurrogate(c) && block != null && block != Character.UnicodeBlock.SPECIALS
     }

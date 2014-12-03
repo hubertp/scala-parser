@@ -3,9 +3,13 @@ import acyclic.file
 import macros.Macros._
 import org.parboiled2._
 
+import org.parboiled2.{Rule0, RuleDSLCombinators, Rule}
+import org.parboiled2.support._
+
 import scala.language.implicitConversions
 
-abstract class Core extends Parser with syntax.Basic with syntax.Literals with syntax.Identifiers {
+abstract class Core extends Parser with syntax.Basic
+  with syntax.Literals with syntax.Identifiers with MacroExtensions {
   // Aliases for common things. These things are used in almost every parser
   // in the file, so it makes sense to keep them short.
   type R0 = Rule0
